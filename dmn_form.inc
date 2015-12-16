@@ -139,57 +139,49 @@ function ajax_dmn_checkbox_callback($form, $form_state) {
 }
 
 function ajax_dmn_rebuild_callback($form, $form_state) {
-  $fname = $form_state['values']['dmn_fname'];
-  $lname = $form_state['values']['dmn_lname'];
   if (empty(form_get_errors())) {
+    $fname = $form_state['values']['dmn_fname'];
+    $lname = $form_state['values']['dmn_lname'];
     drupal_get_messages();
-    return array(
-      '#type' => 'ajax',
-      '#commands' => array(
-        array(
-          'command' => 'dmn_rebuild',
-          'fname' => $fname,
-          'lname' => $lname,
-          'elementId' => 'dmn-fieldset',
-        ),
-      ),
+    $commands[] = array(
+      'command' => 'dmn_rebuild',
+      'fname' => $fname,
+      'lname' => $lname,
+      'elementId' => 'dmn-fieldset',
     );
   }
   else {
-    return array(
-      '#type' => 'ajax',
-      '#commands' => array(
-        array(
-          'command' => 'dmn_redirect_to_main',
-        ),
-      )
+    $commands[] = array(
+      'command' => 'dmn_redirect',
+      'topath' => url('/dmn'),
     );
   }
+  return array(
+    '#type' => 'ajax',
+    '#commands' => $commands,
+  );
 }
 
 function ajax_dmn_redirect_callback($form, $form_state) {
-  $_SESSION['dmn_fname'] = $form_state['values']['dmn_fname'];
-  $_SESSION['dmn_lname'] = $form_state['values']['dmn_lname'];
+  $commands = array();
   if (empty(form_get_errors())) {
-    return array(
-      '#type' => 'ajax',
-      '#commands' => array(
-        array(
-          'command' => 'dmn_redirect',
-        ),
-      ),
+    $_SESSION['dmn_fname'] = $form_state['values']['dmn_fname'];
+    $_SESSION['dmn_lname'] = $form_state['values']['dmn_lname'];
+    $commands[] = array(
+      'command' => 'dmn_redirect',
+      'topath' => url('/dmn/view2'),
     );
   }
   else {
-    return array(
-      '#type' => 'ajax',
-      '#commands' => array(
-        array(
-          'command' => 'dmn_redirect_to_main',
-        ),
-      )
+    $commands[] = array(
+      'command' => 'dmn_redirect',
+      'topath' => url('/dmn'),
     );
   }
+  return array(
+    '#type' => 'ajax',
+    '#commands' => $commands,
+  );
 }
 
 /**
@@ -246,6 +238,11 @@ function dmn_db_insert(&$form_state) {
 */
 }
 
+/**
+ * Generate random string for #default_value ;)
+ * @param int $length
+ * @return string
+ */
 function generateRandomString($length = 10) {
   $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
   $charactersLength = strlen($characters);

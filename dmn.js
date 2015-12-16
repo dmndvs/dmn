@@ -1,5 +1,5 @@
 (function($) {
-    Drupal.behaviors.dmnbehaviors = {
+    Drupal.behaviors.dmn = {
         attach: function () {
             /*
                 jQuery('#edit-dmn-fname').attr('placeholder','First Name');
@@ -9,23 +9,15 @@
         }
     };
 
-
-    Drupal.ajax.prototype.commands.dmn_redirect_to_main = function(ajax, response, status){
-        window.location = "/dmn";
-    };
-
-
     Drupal.ajax.prototype.commands.dmn_rebuild = function(ajax, response, status){
 
             jQuery('#' + response.elementId).replaceWith('<div>hello, ' + response.fname + ' ' + response.lname + '</div>');
 
     };
 
-
     Drupal.ajax.prototype.commands.dmn_redirect = function(ajax, response, status){
-        window.location = "/dmn/view2";
+        window.location = response.topath;
     };
-
 
     Drupal.ajax.prototype.commands.special_effects = function(ajax, response, status){
         jQuery('#' + response.elementId).hide().text(response.name).fadeIn(response.duration, function() {

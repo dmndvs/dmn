@@ -55,15 +55,7 @@ function dmn_admin_column_delete_form($form, &$form_state) {
   return $form;
 }
 
-/**
- * submit for form
- * It resets the marked columns
- * The System columns that defined in dmn.install file will not removed
- * @param $form
- * @param $form_state
- */
-function dmn_admin_column_delete_form_submit($form, &$form_state){
-  $dbquery = 'ALTER TABLE {drupal.dmn_table} DROP ';
+function dmn_admin_column_delete_form_validate($form, &$form_state){
   if($form_state['values']['dmn_checkboxes']['dmnid'] != '0') {
     drupal_set_message(t('@column is system column', array('@column' => $form_state['values']['dmn_checkboxes']['dmnid'])), 'error');
     $form_state['values']['dmn_checkboxes']['dmnid'] = 0;
@@ -84,6 +76,17 @@ function dmn_admin_column_delete_form_submit($form, &$form_state){
     drupal_set_message(t('@column is system column', array('@column' => $form_state['values']['dmn_checkboxes']['dmn_color'])), 'error');
     $form_state['values']['dmn_checkboxes']['dmn_color'] = 0;
   }
+}
+/**
+ * submit for form
+ * It resets the marked columns
+ * The System columns that defined in dmn.install file will not removed
+ * @param $form
+ * @param $form_state
+ */
+
+function dmn_admin_column_delete_form_submit($form, &$form_state){
+  $dbquery = 'ALTER TABLE {drupal.dmn_table} DROP ';
   foreach($form_state['values']['dmn_checkboxes'] as $cname) {
     if($cname != '0') {
       $columns[] = $cname;
@@ -146,7 +149,6 @@ function dmn_admin_column_add_form($form, &$form_state) {
     '#states' => array(
       'visible' => array(
         array(':input[name="dmn_add_datatype"]' => array('value' => 'VARCHAR')),
-        array(':input[name="dmn_add_datatype"]' => array('value' => 'BLOB')),
       ),
     ),
   );
@@ -369,9 +371,9 @@ function dmn_edit_page_db_update($form_state) {
   }
 }
 
-function dmn_delete($id) {
+function dmn_delete($dmnid) {
   $delete = db_delete('dmn_table')
-    ->condition('dmnid', $id)
+    ->condition('dmnid', $dmnid)
     ->execute();
   if (isset($delete)) {
     drupal_set_message(t('deleted'));
@@ -380,5 +382,5 @@ function dmn_delete($id) {
   else {
     drupal_set_message(t('something went wrong!'), 'error');
   }
-  drupal_goto(url('admin/config/content/dmn/editfields'));
+  drupal_goto('admin/config/content/dmn/editfields');
 }
