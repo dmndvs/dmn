@@ -135,7 +135,7 @@ function dmn_form_submit($form, &$form_state) {
       '@fname' => $form_state['values']['dmn_fname'],
       '@lname' => $form_state['values']['dmn_lname'],
     )));
-    cache_clear_all(array('dmn:view', 'dmn:view-ann'), 'dmn_cache');
+    cache_clear_all('*', 'dmn_cache', TRUE);
   }
   else {
     drupal_set_message(t('something went wrong'), 'error');

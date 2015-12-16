@@ -78,7 +78,7 @@ function dmn_admin_column_add_form_submit($form, &$form_state) {
     $query = dmn_admin_column_add_db_query($form_state);
     if(isset($query)) {
         drupal_set_message(t('ok'));
-        cache_clear_all('dmn:view', 'dmn_cache');
+        cache_clear_all('*', 'dmn_cache', TRUE);
     }
 }
 

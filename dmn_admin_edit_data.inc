@@ -71,7 +71,7 @@ function dmn_edit_page($form, &$form_state)
 
     $form['dmn_fname_color'] = array(
         '#type' => 'radios',
-        '#default_value' => unserialize($result['dmn_color'])[0],
+        '#default_value' => unserialize($result['dmn_color'])['fname'],
         '#options' => array(
             'black' => 'black',
             'red' => 'red',
@@ -91,7 +91,7 @@ function dmn_edit_page($form, &$form_state)
 
     $form['dmn_lname_color'] = array(
         '#type' => 'radios',
-        '#default_value' => unserialize($result['dmn_color'])[1],
+        '#default_value' => unserialize($result['dmn_color'])['lname'],
         '#options' => array(
             'black' => 'black',
             'red' => 'red',
@@ -146,8 +146,8 @@ function dmn_edit_page_submit($form, &$form_state)
     $update = dmn_edit_page_db_update($form_state);
     if (isset($update)) {
         drupal_set_message(t('values updated'));
-        cache_clear_all('dmn:view', 'dmn_cache');;
-        drupal_goto(url('admin/config/content/dmn/editfields'));
+        cache_clear_all('*', 'dmn_cache', TRUE);
+        drupal_goto('admin/config/content/dmn/editfields');
     } else {
         drupal_set_message(t('something went wrong'), 'error');
     }
@@ -186,7 +186,7 @@ function dmn_delete($dmnid)
         ->execute();
     if (isset($delete)) {
         drupal_set_message(t('deleted'));
-        cache_clear_all('dmn:view', 'dmn_cache');
+        cache_clear_all('*', 'dmn_cache', TRUE);
     } else {
         drupal_set_message(t('something went wrong!'), 'error');
     }

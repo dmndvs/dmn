@@ -13,75 +13,74 @@
  */
 function dmn_display()
 {
-
-    $content = '';
     global $user;
-    if (isset($user->roles[1])) {
-        $cid = 'dmn:view-ann';
-    } else {
-        $cid = 'dmn:view';
+    $header = array();
+    $rows = array();
+    $output = '';
+    $cid = 'dmn:view';
+    $fields = array('dmn_fname', 'dmn_lname', 'dmn_color');
+    foreach ($user->roles AS $role) {
+        switch ($role) {
+            case 'anonymous user':
+                $cid .= ':anonymous';
+                $fields = array('dmn_fname', 'dmn_lname', 'dmn_color');
+                break;
+            case 'authenticated user':
+                $cid .= ':authenticated';
+                $fields = array('dmn_fname', 'dmn_lname', 'dmn_info', 'dmn_color');
+                break;
+            case 'administrator':
+                $cid .= ':admin';
+                $fields = array();
+                break;
+            case 'admin':
+                $cid .= ':admin';
+                $fields = array();
+                break;
+        }
     }
     $cache = cache_get($cid, 'dmn_cache');
-    if (empty($cache) || time() > $cache->expire) {
-        $header = array();
-        $column = db_query('SHOW COLUMNS FROM {dmn_table}');
-        foreach ($column as $row) {
-            if (isset($user->roles[1]) && $row->Field == 'dmn_color') {
-            } else {
-                $header[] = $row->Field;
-            }
-        };
-        $rows = array();
-        $result = db_query('SELECT * FROM {dmn_table}');
-        foreach ($result as $row) {
-            $data = array();
-            foreach ($row as $key => $value) {
-                if (isset($user->roles[1]) && $key == 'dmn_color') {
-                    $value = unserialize($value);
-                    if (isset($value)) {
-                        if (isset($data['dmn_fname']) && isset($value['fname'])) {
-                            $data['dmn_fname']['style'] = 'color:' . $value['fname'];
-                        }
-                        if (isset($data['dmn_lname']) && isset($value['lname'])) {
-                            $data['dmn_lname']['style'] = 'color:' . $value['lname'];
-                        }
-                    }
-                } else {
-                    $data[$key] = array(
-                        'data' => $value,
-                    );
-                    if ($key == 'dmn_color' && isset($value)) {
-                        $value = unserialize($value);
-                        if (isset($data['dmn_fname']) && isset($value['fname'])) {
-                            $data['dmn_fname']['style'] = 'color:' . $value['fname'];
-                        }
-                        if (isset($data['dmn_lname']) && isset($value['lname'])) {
-                            $data['dmn_lname']['style'] = 'color:' . $value['lname'];
-                        }
-                    }
+    if (empty($cache)) {
+        $query = db_select('dmn_table', 'dmn')
+          ->fields('dmn', $fields)
+          ->execute();
+        while ($result = $query->fetchAssoc()) {
+            foreach ($result AS $key => $value) {
+                if (!in_array($key, $header)) {
+                    $header[] .= $key;
                 }
+                $data[$key] = array(
+                  'data' => $value,
+                );
+            }
+            if (isset($result['dmn_color'])) {
+                $color = unserialize($result['dmn_color']);
+                $data['dmn_fname']['style'] = 'color:' . $color['fname'];
+                $data['dmn_lname']['style'] = 'color:' . $color['lname'];
             }
             $rows[] = $data;
         }
         $cache = array(
-            'header' => $header,
-            'rows' => $rows,
+          'header' => $header,
+          'rows' => $rows,
         );
-        cache_set($cid, $cache, 'dmn_cache', REQUEST_TIME + (60 * 30));
-    } else {
+        cache_set($cid, $cache, 'dmn_cache');
+    }
+    else
+    {
         drupal_set_message(t('cached version'));
         $header = $cache->data['header'];
         $rows = $cache->data['rows'];
     }
-    $content = theme('table', array(
-        'header' => $header,
-        'rows' => $rows,
-        'attributes' => array(
-            'class' => array('dmn')
-        ),
-        '#empty' => t('Your table is empty'),
+    $output = theme('table', array(
+      'header' => $header,
+      'rows' => $rows,
+      'attributes' => array(
+        'class' => array('dmn')
+      ),
+      '#empty' => t('Your table is empty'),
     ));
-    return $content;
+    return $output;
 }
 
 /**
@@ -91,35 +90,5 @@ function dmn_display()
 
 function dmn_display_()
 {
-    global $user;
-    $output = '';
-    $cid = 'dmn:view';
-    $urole = 'anonymous';
-    $fields = 'dmn_fname, dmn_lname, dmn_color';
-    foreach ($user->roles AS $role) {
-        switch ($role) {
-            case 'anonymous user':
-                $cid .= ':anonymous';
-                $urole = 'anonymous';
-                $fields = 'dmn_fname, dmn_lname, dmn_color';
-                break;
-            case 'authenticated user':
-                $cid .= ':authenticated';
-                $urole = 'authenticated';
-                $fields = 'dmn_fname, dmn_lname, dmn_info, dmn_color';
-                break;
-            case 'administrator':
-                $cid .= ':admin';
-                $urole = 'admin';
-                $fields = '*';
-                break;
-            case 'admin':
-                $cid .= ':admin';
-                $urole = 'admin';
-                $fields = '*';
-                break;
-        }
-    }
 
-    return $output;
 }

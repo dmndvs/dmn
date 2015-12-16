@@ -79,8 +79,10 @@ function dmn_admin_column_delete_form_submit($form, &$form_state)
         $query = db_query($dbquery);
         if ($query) {
             drupal_set_message(t('@columns are dropped', array('@columns' => implode(', ', $columns))));
+            cache_clear_all('*', 'dmn_cache', TRUE);
         }
     }
+
 
 
 }
