@@ -10,11 +10,14 @@ function dmn_view2_form($form, &$form_state) {
 
   if(!empty($_SESSION['dmn_fname'])) {
     $defvalue = $_SESSION['dmn_fname'];
+    unset($_SESSION['dmn_fname']);
   }
   else {
     $defvalue = '';
   }
-  unset($_SESSION['dmn_fname'], $_SESSION['dmn_lname']);
+  if(!empty($_SESSION['dmn_lname'])) {
+    unset($_SESSION['dmn_lname']);
+  }
 
   $form['name'] = array(
     '#title' => t('Your Name'),
@@ -67,9 +70,5 @@ function dmn_view2_form_ajax_callback($form, $form_state) {
     '#commands' => $commands,
   );
   return $page;
-  /*return array(
-    '#type' => 'ajax',
-    '#commands' => array(array('command' => 'dmn_alert')),
-  );*/
 }
 

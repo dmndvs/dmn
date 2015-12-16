@@ -1,7 +1,7 @@
 <?php
 /**
  * dmn.install
- * create table dmn_table in database
+ * create table dmn_table, dmn_cache in database
  *
  * PHP version 5.3
  *
@@ -9,8 +9,9 @@
  * @category Testing
  * @return   mixed
  * @author   dmn_dvs <localhost@localhost.loc>
- *
+ * @see      dmn_schema()
  */
+
 
 function dmn_schema() {
   $schema['dmn_table'] = array(

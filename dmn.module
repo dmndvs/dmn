@@ -5,17 +5,15 @@
  * @author   dmn_dvs <localhost@localhost.loc>
  * @file     DMN module
  */
-
 /**
+ * Implements hook_hook_preprocess
+ * Add JS
  * @param $variables
  * @return array
  */
 function dmn_preprocess_page(&$variables) {
-
   //dpm(get_defined_vars());
-
   drupal_add_js(drupal_get_path('module', 'dmn') . '/dmn.js');
-
 }
 
 /**
@@ -72,7 +70,7 @@ function dmn_menu() {
   $items['dmn/view2'] = array(
     'title' => 'view',
     'description' => 'DMN custom module view',
-    //'page callback' => 'dmn_display_2',
+    //'page callback' => 'dmn_display_',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('dmn_view2_form'),
     'access callback' => TRUE,
@@ -83,11 +81,11 @@ function dmn_menu() {
   $items['admin/config/content/dmn'] = array(
     'title' => 'DMN Configuration',
     'description' => 'DMN custom module configuration',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('dmn_admin_column_delete_form'),
+    'page callback' => 'dmn_admin_view_page',
+    //'page arguments' => array('dmn_admin_column_delete_form'),
     'access arguments' => array('access administration pages'),
     'type' => MENU_NORMAL_ITEM,
-    'file' => 'dmn_admin.inc',
+    'file' => 'dmn_admin_edit_data.inc',
   );
   $items['admin/config/content/dmn/drop'] = array(
     'title' => 'drop fields',
@@ -95,8 +93,8 @@ function dmn_menu() {
     'page callback' => 'drupal_get_form',
     'page arguments' => array('dmn_admin_column_delete_form'),
     'access arguments' => array('access administration pages'),
-    'type' => MENU_DEFAULT_LOCAL_TASK,
-    'file' => 'dmn_admin.inc',
+    'type' => MENU_LOCAL_TASK,
+    'file' => 'dmn_admin_delete.inc',
   );
   $items['admin/config/content/dmn/addfield'] = array(
     'title' => 'create fields',
@@ -105,29 +103,29 @@ function dmn_menu() {
     'page arguments' => array('dmn_admin_column_add_form'),
     'access arguments' => array('access administration pages'),
     'type' => MENU_LOCAL_TASK,
-    'file' => 'dmn_admin.inc',
+    'file' => 'dmn_admin_add_column.inc',
   );
   $items['admin/config/content/dmn/editfields'] = array(
     'title' => 'edit fields',
     'description' => 'edit existing fields',
     'page callback' => 'dmn_admin_view_page',
     'access arguments' => array('access administration pages'),
-    'type' => MENU_LOCAL_TASK,
-    'file' => 'dmn_admin.inc',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'file' => 'dmn_admin_edit_data.inc',
   );
   $items['admin/config/content/dmn/editfields/%'] = array(
     'page callback' => 'drupal_get_form',
     'page arguments' => array('dmn_edit_page', 5),
     'access arguments' => array('access administration pages'),
     'type' => MENU_NORMAL_ITEM,
-    'file' => 'dmn_admin.inc',
+    'file' => 'dmn_admin_edit_data.inc',
   );
   $items['admin/config/content/dmn/%/delete'] = array(
     'page callback' => 'dmn_delete',
     'page arguments' => array(4),
     'access arguments' => array('access administration pages'),
     'type' => MENU_NORMAL_ITEM,
-    'file' => 'dmn_admin.inc',
+    'file' => 'dmn_admin_edit_data.inc',
   );
 
   return $items;
@@ -166,6 +164,12 @@ function dmn_element_info() {
   return $types;
 }
 
+/**
+ * implements hook_theme
+ *
+ * @return array
+ */
+
 function dmn_theme() {
   $data = array(
     'dmn_email' => array(
@@ -192,12 +196,9 @@ function theme_dmn_email($vars) {
  */
 function dmn_views_query_alter(&$view, &$query) {
   if($view->name == 'dmn') {
-  dpm($query);
-  dpm($view);
+
   }
 }
-
-
 
 class cache_class_dmn_cache extends DrupalDatabaseCache{
 

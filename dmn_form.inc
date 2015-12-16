@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Structure of DMN form
  *
  * @return mixed
  * @param  $form
- * @name   vo_contact_form
+ * @name   dmn_form
  */
 
 function dmn_form($form, &$form_state) {
@@ -83,11 +82,17 @@ function dmn_form($form, &$form_state) {
       'callback' => 'ajax_dmn_rebuild_callback',
     ),
   );
+  $form['dmn_form']['submit_button3'] = array(
+      '#type' => 'submit',
+      '#value' => t('submit'),
+      '#weight' => 12,
+  );
 
   if (!empty($form_state['values']['dmn_checkbox'])) {
     $form['dmn_form']['dmn_info'] = array(
       '#type' => 'textarea',
       '#title' => t('Information:'),
+      '#default_value' => '',
     );
   }
 
@@ -106,6 +111,9 @@ function dmn_form($form, &$form_state) {
  * @form  DMN_form_validate()
  */
 function dmn_form_validate($form, &$form_state) {
+  if (!isset($form_state['values']['dmn_info'])) {
+    $form_state['values']['dmn_info'] = '';
+  }
   if (empty($form_state['values']['dmn_fname'])) {
     form_set_error('dmn_fname', 'empty first name');
   }
@@ -134,10 +142,24 @@ function dmn_form_submit($form, &$form_state) {
   };
 }
 
+/**
+ * callback function on checked dmn_checkbox
+ *
+ * @param $form
+ * @param $form_state
+ * @return mixed
+ */
 function ajax_dmn_checkbox_callback($form, $form_state) {
   return $form['dmn_form'];
 }
 
+/**
+ * callback function on submit-rebuild button
+ *
+ * @param $form
+ * @param $form_state
+ * @return array
+ */
 function ajax_dmn_rebuild_callback($form, $form_state) {
   if (empty(form_get_errors())) {
     $fname = $form_state['values']['dmn_fname'];
@@ -161,6 +183,14 @@ function ajax_dmn_rebuild_callback($form, $form_state) {
     '#commands' => $commands,
   );
 }
+
+/**
+ * callback function on submit-redirect button
+ *
+ * @param $form
+ * @param $form_state
+ * @return array
+ */
 
 function ajax_dmn_redirect_callback($form, $form_state) {
   $commands = array();
@@ -196,50 +226,28 @@ function ajax_dmn_redirect_callback($form, $form_state) {
 
 function dmn_db_insert(&$form_state) {
 
-  if (!isset($form_state['values']['dmn_info'])) {
-    $form_state['values']['dmn_info'] = '';
-  }
-
   $setting = array(
-    $form_state['values']['dmn_fname_color'],
-    $form_state['values']['dmn_lname_color'],
+    'fname' => $form_state['values']['dmn_fname_color'],
+    'lname' => $form_state['values']['dmn_lname_color'],
   );
-  //$dmncolor = serialize($setting); //serialize array for db_insert
 
-  $valu = array(
+  $data = array(
     'dmn_fname' => $form_state['values']['dmn_fname'],
     'dmn_lname' => $form_state['values']['dmn_lname'],
     'dmn_info' => $form_state['values']['dmn_info'],
     'dmn_color' => $setting,
   );
-  if (drupal_write_record('dmn_table', $valu)) {
+  if (drupal_write_record('dmn_table', $data)) {
     return TRUE;
   }
   else {
     return FALSE;
   }
-  // use db_insert for inserting data
-  /*
-    $insert = db_insert('dmn_table')
-      ->fields(array(
-      'dmn_fname' => $form_state['values']['dmn_fname'],
-      'dmn_lname' => $form_state['values']['dmn_lname'],
-      'dmn_info' => $form_state['values']['dmn_info'],
-      'dmn_color' => $dmncolor,
-    ))
-      ->execute();
-
-    if ($insert) {
-      return TRUE;
-    }
-    else {
-      return FALSE;
-    }
-*/
 }
 
 /**
  * Generate random string for #default_value ;)
+ *
  * @param int $length
  * @return string
  */
