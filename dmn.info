@@ -1,0 +1,6 @@
+name = DMN
+description = custom module
+core = 7.x
+version = 1.0
+configure = admin/config/dmn/configuration
+stylesheets[all][] = dmn.css

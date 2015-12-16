@@ -1,0 +1,204 @@
+<?php
+/**
+ * PHP version 5.3
+ * @category Testing
+ * @author   dmn_dvs <localhost@localhost.loc>
+ * @file     DMN module
+ */
+
+/**
+ * @param $variables
+ * @return array
+ */
+function dmn_preprocess_page(&$variables) {
+
+  //dpm(get_defined_vars());
+
+  drupal_add_js(drupal_get_path('module', 'dmn') . '/dmn.js');
+
+}
+
+/**
+ * Define permission for /dmn
+ *
+ * @return array
+ * @see    dmn_permission()
+ *
+ * ATTENTION: permission does not used in this module
+ */
+
+function dmn_permission() {
+  return array(
+    'DMN' => array(
+      'title' => t('access view'),
+      'description' => t('Perform access'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu
+ */
+function dmn_menu() {
+  $items = array();
+  $items['dmn'] = array(
+    'title' => 'DMN',
+    'description' => 'DMN custom module',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('dmn_form'),
+    'access callback' => TRUE,
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'dmn_form.inc',
+  );
+
+  $items['dmn/input'] = array(
+    'title' => 'DMN input',
+    'description' => 'DMN custom module input',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('dmn_form'),
+    'access callback' => TRUE,
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'file' => 'dmn_form.inc',
+  );
+
+  $items['dmn/view'] = array(
+    'title' => 'DMN view',
+    'description' => 'DMN custom module view',
+    'page callback' => 'dmn_display',
+    'access callback' => TRUE,
+    'type' => MENU_LOCAL_TASK,
+    'file' => 'dmn_display.inc',
+  );
+  $items['dmn/view2'] = array(
+    'title' => 'view',
+    'description' => 'DMN custom module view',
+    //'page callback' => 'dmn_display_2',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('dmn_view2_form'),
+    'access callback' => TRUE,
+    'type' => MENU_LOCAL_TASK,
+    //'file' => 'dmn_display.inc',
+    'file' => 'view2.inc',
+  );
+  $items['admin/config/content/dmn'] = array(
+    'title' => 'DMN Configuration',
+    'description' => 'DMN custom module configuration',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('dmn_admin_column_delete_form'),
+    'access arguments' => array('access administration pages'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'dmn_admin.inc',
+  );
+  $items['admin/config/content/dmn/drop'] = array(
+    'title' => 'drop fields',
+    'description' => 'drop field from table',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('dmn_admin_column_delete_form'),
+    'access arguments' => array('access administration pages'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'file' => 'dmn_admin.inc',
+  );
+  $items['admin/config/content/dmn/addfield'] = array(
+    'title' => 'create fields',
+    'description' => 'add new field to table',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('dmn_admin_column_add_form'),
+    'access arguments' => array('access administration pages'),
+    'type' => MENU_LOCAL_TASK,
+    'file' => 'dmn_admin.inc',
+  );
+  $items['admin/config/content/dmn/editfields'] = array(
+    'title' => 'edit fields',
+    'description' => 'edit existing fields',
+    'page callback' => 'dmn_admin_view_page',
+    'access arguments' => array('access administration pages'),
+    'type' => MENU_LOCAL_TASK,
+    'file' => 'dmn_admin.inc',
+  );
+  $items['admin/config/content/dmn/editfields/%'] = array(
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('dmn_edit_page', 5),
+    'access arguments' => array('access administration pages'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'dmn_admin.inc',
+  );
+  $items['admin/config/content/dmn/%/delete'] = array(
+    'page callback' => 'dmn_delete',
+    'page arguments' => array(4),
+    'access arguments' => array('access administration pages'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'dmn_admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_element_info
+ *
+ * Define new elements
+ *
+ * @return mixed
+ */
+
+function dmn_element_info() {
+
+  $types['dmn_textfield'] = array(
+    '#input' => TRUE,
+    '#theme' => array('textfield'),
+    '#autocomplete_path' => FALSE,
+    '#theme_wrappers' => array('form_element'),
+  );
+
+  $types['dmn_checkbox'] = array(
+    '#input' => TRUE,
+    '#return_value' => TRUE,
+    //'#process' => array('form_process_checkbox', 'ajax_process_form'),
+    '#theme' => array('checkbox'),
+    '#theme_wrappers' => array('form_element'),
+    '#title_display' => 'after',
+  );
+  $types['dmn_email'] = array(
+    '#input'   => TRUE,
+    '#theme' => 'dmn_email',
+    '#theme_wrappers' => array('form_element'),
+  );
+  return $types;
+}
+
+function dmn_theme() {
+  $data = array(
+    'dmn_email' => array(
+      'arguments' => array('element' => NULL),
+      'render element' => 'element',
+    )
+  );
+  return $data;
+}
+
+function theme_dmn_email($vars) {
+  $element = $vars['element'];
+  $element['#attributes']['type'] = 'email';
+  $element['#attributes']['placeholder'] = 'e-mail';
+  element_set_attributes($element, array('id', 'name'));
+  //_form_set_class($element, array('form-text', 'form-date'));
+
+  $output = '<input' . drupal_attributes($element['#attributes']) . ' />';
+  return $output;
+}
+
+/**
+ * Implements hook_views_query_alter().
+ */
+function dmn_views_query_alter(&$view, &$query) {
+  if($view->name == 'dmn') {
+  dpm($query);
+  dpm($view);
+  }
+}
+
+
+
+class cache_class_dmn_cache extends DrupalDatabaseCache{
+
+}

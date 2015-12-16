@@ -1,0 +1,14 @@
+#dmn-form .form-type-radio {
+    float: left;
+    padding: 0px 5px;
+}
+#dmn-form .description {
+    width: 99%;
+    display: flex;
+}
+#edit-dmn-fname, #edit-dmn-lname {
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 255, 0.18);
+    outline: none;
+    width: 210px;
+}

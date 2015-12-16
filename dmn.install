@@ -1,0 +1,58 @@
+<?php
+/**
+ * dmn.install
+ * create table dmn_table in database
+ *
+ * PHP version 5.3
+ *
+ * @file     dmn.install
+ * @category Testing
+ * @return   mixed
+ * @author   dmn_dvs <localhost@localhost.loc>
+ *
+ */
+
+function dmn_schema() {
+  $schema['dmn_table'] = array(
+    'description' => t('table for DMN module'),
+    'fields' => array(
+      'dmnid' => array(
+        'description' => 'The primary identifier for DMN.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE
+      ),
+      'dmn_fname' => array(
+        'description' => 'First Name',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => FALSE,
+        'default' => ''
+      ),
+      'dmn_lname' => array(
+        'description' => 'Last Name',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => FALSE,
+        'default' => ''
+      ),
+      'dmn_info' => array(
+        'description' => 'Additional information',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+        'default' => ''
+      ),
+      'dmn_color' => array(
+        'description' => 'font color setting',
+        'type' => 'blob',
+        'serialize' => TRUE,
+      ),
+    ),
+    'primary key' => array('dmnid'),
+  );
+
+  $schema['dmn_cache'] = drupal_get_schema_unprocessed('system', 'cache');
+
+  return $schema;
+}
