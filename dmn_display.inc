@@ -80,15 +80,19 @@ function dmn_display()
       ),
       '#empty' => t('Your table is empty'),
     ));
+    if(empty($header)) {
+        $output = '<p>' . t('No data to show') . '</p>';
+    }
     return $output;
 }
-
+/*
 /**
  * view 2, testing, not use
  * @return string
  */
-
+/*
 function dmn_display_()
 {
 
 }
+*/

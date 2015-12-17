@@ -6,9 +6,12 @@
     width: 99%;
     display: flex;
 }
-#edit-dmn-fname, #edit-dmn-lname {
+#dmn-form input[type = 'text'], #dmn-form input[type = 'email'] {
     border: none;
     border-bottom: 1px solid rgba(0, 0, 255, 0.18);
     outline: none;
-    width: 210px;
+    width: 99%;
+}
+#dmn-form input[type = 'text']:focus, #dmn-form input[type = 'email']:focus {
+    border-bottom: 2px solid rgba(30, 89, 75, 0.85);
 }

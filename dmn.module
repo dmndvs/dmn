@@ -191,15 +191,3 @@ function theme_dmn_email($vars) {
   return $output;
 }
 
-/**
- * Implements hook_views_query_alter().
- */
-function dmn_views_query_alter(&$view, &$query) {
-  if($view->name == 'dmn') {
-
-  }
-}
-
-class cache_class_dmn_cache extends DrupalDatabaseCache{
-
-}
